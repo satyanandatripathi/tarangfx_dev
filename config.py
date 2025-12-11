@@ -21,6 +21,10 @@ class Config:
     # Optional Force Subscription
     FORCE_SUB_CHANNEL: Optional[str] = os.getenv("FORCE_SUB_CHANNEL", None)
 
+    # Supabase Database (Optional - falls back to in-memory)
+    SUPABASE_URL: Optional[str] = os.getenv("SUPABASE_URL", None)
+    SUPABASE_ANON_KEY: Optional[str] = os.getenv("SUPABASE_ANON_KEY", None)
+
     # Bot Settings
     BOT_NAME: str = "PnProjects Audio Bot"
     BOT_USERNAME: str = os.getenv("BOT_USERNAME", "audio_processor_bot")
@@ -28,6 +32,10 @@ class Config:
     # File Settings
     DOWNLOAD_LOCATION: str = "./downloads"
     MAX_FILE_SIZE: int = 2000 * 1024 * 1024  # 2GB in bytes
+
+    # Session Settings
+    SESSION_TIMEOUT_MINUTES: int = 5
+    CLEANUP_INTERVAL_SECONDS: int = 60
 
     # Processing Settings
     DEFAULT_BITRATE: str = "320k"

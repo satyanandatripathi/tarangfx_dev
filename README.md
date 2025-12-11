@@ -46,15 +46,22 @@ Zero database storage. Your files are processed and immediately deleted. No logs
 ## ✨ Feature Showcase
 
 ```
-📊 Audio Enhancement          🎚️ Precision Controls         🔄 Format Freedom
-├─ Bass Boost                 ├─ Bitrate Selection          ├─ Lossy Formats
-├─ Audio Normalization        ├─ Sample Rate Tuning         │  • MP3, AAC, OGG
-├─ Fade In/Out Effects        ├─ Channel Configuration      │  • OPUS, WMA, AC3
-├─ Speed Adjustment           └─ Custom FFmpeg Filters      │  • AMR, WebM
-├─ Audio Reversal                                           │
-└─ Custom Filters             💾 File Support               └─ Lossless Formats
-                              └─ Up to 2GB per file            • FLAC, WAV, ALAC
-                                                               • APE, WV, TTA
+🎛️ Professional Audio Tools   🎚️ Precision Controls         🔄 Format Freedom
+├─ Custom Parametric EQ       ├─ Bitrate Selection          ├─ Lossy Formats
+├─ Pedalboard Effects         ├─ Sample Rate Tuning         │  • MP3, AAC, OGG
+├─ 3D Binaural Audio          ├─ Channel Configuration      │  • OPUS, WMA, AC3
+├─ Bass Boost                 ├─ EQ: 20Hz-40kHz             │  • AMR, WebM
+├─ LUFS Normalization         └─ Multi-effect Chains        │
+├─ Fade In/Out Effects                                      └─ Lossless Formats
+├─ Speed Adjustment           🎼 Effects Library               • FLAC, WAV, ALAC
+└─ Professional Mastering     ├─ Reverb & Chorus               • APE, WV, TTA
+                              ├─ Compressor & Limiter
+📊 Advanced Features          ├─ Delay & Phaser            💾 File Support
+├─ Session Persistence        ├─ Distortion                └─ Up to 2GB per file
+├─ Multi-step Processing      └─ Bitcrush & More           └─ Scalable Database
+├─ Robust Download                                         └─ Auto Cleanup
+└─ Industry Standards         🔊 Professional Quality
+                              └─ Studio-grade processing
 ```
 
 ---
@@ -167,6 +174,11 @@ API_HASH=abcdef1234567890abcdef1234567890
 # Optional: Force Subscription
 FORCE_SUB_CHANNEL=YourChannelUsername
 # or use channel ID: FORCE_SUB_CHANNEL=-1001234567890
+
+# Optional: Supabase Database (for scalability)
+# If not provided, bot uses in-memory storage
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
 <details>
@@ -175,6 +187,7 @@ FORCE_SUB_CHANNEL=YourChannelUsername
 - **BOT_TOKEN**: Message [@BotFather](https://t.me/BotFather) on Telegram
 - **API_ID & API_HASH**: Visit [my.telegram.org](https://my.telegram.org/auth)
 - **FORCE_SUB_CHANNEL**: Your channel username (without @) or channel ID
+- **SUPABASE_URL & KEY**: Create a free project at [supabase.com](https://supabase.com) (optional for small-scale use)
 
 </details>
 
@@ -272,14 +285,39 @@ graph LR
 | `/start` | Initialize bot and display welcome message with main menu |
 | `/help` | Access comprehensive help center and feature documentation |
 | `/cancel` | Clear current session and reset processing state |
+| `/eq` | Apply custom parametric EQ (e.g., `/eq --100hz +3db --1khz -2db`) |
 
 ### Processing Pipeline
 
 1. **Upload**: Send any audio file (up to 2GB)
-2. **Configure**: Choose output format, bitrate, sample rate
-3. **Enhance**: Apply optional effects like bass boost or normalization
-4. **Convert**: FFmpeg processes your audio with selected parameters
-5. **Download**: Receive your converted file with metadata preserved
+2. **Configure**: Choose output format, bitrate, sample rate, or use /eq command
+3. **Enhance**: Apply Pedalboard effects like reverb, compressor, delay, etc.
+4. **Process**: Industry-standard audio processing with FFmpeg and Pedalboard
+5. **Continue**: Apply more effects or convert to different format
+6. **Download**: Receive your processed file (original persists in session for 5 min)
+
+### Advanced Features
+
+**Custom EQ:**
+- Command format: `/eq --[frequency]hz [gain]db`
+- Frequency range: 20Hz to 40kHz
+- Gain range: -20dB to +20dB
+- Example: `/eq --60hz +4db --200hz -1db --3khz +2db`
+
+**Pedalboard Effects:**
+- Professional audio effects from Spotify's Pedalboard library
+- Available effects: Reverb, Chorus, Phaser, Compressor, Delay, Distortion, Limiter, Bitcrush
+- Chain multiple effects for creative sound design
+
+**3D Binaural Audio:**
+- HRTF-based spatial audio processing
+- Headphone-optimized binaural output
+- Configurable azimuth and elevation
+
+**Session Management:**
+- Files persist for 5 minutes after processing
+- Apply multiple operations sequentially
+- Automatic cleanup of expired sessions
 
 ---
 
@@ -326,25 +364,28 @@ graph LR
 TarangFX/
 │
 ├── 🤖 Core Components
-│   ├── bot.py              # Main bot logic and message handlers
-│   ├── client.py           # Custom Pyrogram client implementation
-│   └── config.py           # Environment configuration and validation
+│   ├── bot.py                 # Main bot logic with async handlers
+│   ├── client.py              # Custom Pyrogram client
+│   ├── config.py              # Configuration management
+│   ├── audio_processor.py     # Advanced audio processing engine
+│   ├── download_manager.py    # Robust file download with retry
+│   └── database.py            # Supabase/in-memory session manager
 │
 ├── 🎨 User Interface
-│   ├── buttons.py          # Inline keyboard layouts and navigation
-│   └── forcesub.py         # Subscription verification middleware
+│   ├── buttons.py             # Modular inline keyboards
+│   └── forcesub.py            # Subscription verification
 │
 ├── 📦 Dependencies
-│   ├── requirements.txt    # Python package specifications
-│   └── Dockerfile          # Container configuration
+│   ├── requirements.txt       # Python packages with Pedalboard
+│   ├── Dockerfile             # Optimized container build
+│   └── docker-compose.yml     # Service orchestration
 │
 ├── ⚙️ Configuration
-│   ├── .env.example        # Environment template
-│   ├── docker-compose.yml  # Orchestration setup
-│   └── setup.sh            # Automated setup script
+│   ├── .env.example           # Environment template
+│   └── setup.sh               # Automated installation script
 │
 └── 💾 Runtime
-    └── downloads/          # Temporary processing workspace (auto-cleaned)
+    └── downloads/             # Auto-cleaned workspace
 ```
 
 ---
@@ -363,9 +404,12 @@ TarangFX/
 **Core Libraries**
 - `pyrogram` – Asynchronous Telegram client framework
 - `ffmpeg-python` – Python bindings for FFmpeg
-- `pydub` – Audio file manipulation and analysis
-- `librosa` – Advanced audio processing
-- `soundfile` – Audio file I/O operations
+- `pedalboard` – Spotify's audio effects library
+- `librosa` – Advanced audio analysis and processing
+- `soundfile` – High-quality audio file I/O
+- `pyloudnorm` – Industry-standard loudness normalization
+- `supabase` – Scalable database for session management
+- `tenacity` – Retry logic for robust downloads
 
 ---
 
